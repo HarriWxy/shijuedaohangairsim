@@ -2,12 +2,6 @@
 '''
 collision_testing.py : tests pickled network on ability to predict a collision
 
-Copyright (C) 2017 Jack Baird, Alex Cantrell, Keith Denning, Rajwol Joshi, 
-Simon D. Levy, Will McMurtry, Jacob Rosen
-
-This file is part of AirSimTensorFlow
-
-MIT License
 '''
 import airsim
 from AirSimClient import CarClient, CarControls, ImageRequest, AirSimImageType, AirSimClientBase
@@ -26,15 +20,15 @@ IMGSIZE = 1032
 INITIAL_THROTTLE= 0.65
 BRAKING_DURATION = 15
 
-tf.compat.v1.disable_eager_execution()
+tf.compat.v1.disable_eager_execution() #tf 2.0在1.0中不兼容的特性
 
-# connect to the AirSim simulator 
+# 连接到airsim
 client = airsim.CarClient()
 client.confirmConnection()
 client.enableApiControl(True)
 car_controls = airsim.CarControls()
 
-client.reset()
+client.reset() 
 
 # go forward
 car_controls.throttle = INITIAL_THROTTLE
@@ -42,6 +36,7 @@ car_controls.steering = 0
 client.setCarControls(car_controls)
 
 # Load saved training params as ordinary NumPy
+# 数据序列
 W,b = pickle.load(open('params.pkl', 'rb'))
 
 

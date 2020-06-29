@@ -115,6 +115,7 @@ import tensorflow as tf
 
 def inference(x, xsize, ysize, W_vals=0, b_vals=0):
     '''
+    全局控制网络传递函数
     This is a general-purpose softmax inference layer implementation.
     '''
     W_init = tf.compat.v1.constant_initializer(value=W_vals)
