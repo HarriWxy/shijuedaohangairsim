@@ -1,33 +1,27 @@
 # !/usr/bin/env python3
 '''
-collision_training.py : uses stored images to training a neural net to detect collisions
+使用保存的图片训练一个网咯识别碰撞
 
-Copyright (C) 2017 Jack Baird, Alex Cantrell, Keith Denning, Rajwol Joshi, 
-Simon D. Levy, Will McMurtry, Jacob Rosen
+使用tensorflow 2.0版本改写1.0
 
-This file is part of AirSimTensorFlow
-
-MIT License
 '''
 
-# Built-in modules
 import tensorflow as tf
 import numpy as np
 import pickle
-
-# Modules for this project
 from image_helper import loadgray
 
-# Final image is crash; previous are no-crash
+# 最后一张图片是发生了碰撞,之前的没有
+# SAFESIZE意味着安全的图片数量
 SAFESIZE = 5
 
-# Where we've stored images
+# 保存视频图像的文件夹
 IMAGEDIR = './carpix'
 
-# Where we'll store weights and biases
+# 通过pkl文件保存参数网络等
 PARAMFILE = 'params.pkl'
 
-# Parameters
+# 学习的参数
 learning_rate = 0.01
 training_epochs = 500
 batch_size = 100
@@ -36,10 +30,8 @@ display_step = 10
 def loss(output, y):
     dot_product = y * tf.math.log(output)
 
-    # Reduction along axis 0 collapses each column into a single
-    # value, whereas reduction along axis 1 collapses each row 
-    # into a single value. In general, reduction along axis i 
-    # collapses the ith dimension of a tensor to size 1.
+    # 将每一个维度折叠为一个值，这是为啥啊，存疑
+
     xentropy = -tf.reduce_sum(input_tensor=dot_product, axis=1)
      
     loss = tf.reduce_mean(input_tensor=xentropy)
