@@ -17,12 +17,10 @@ import os
 import time
 
 
-client = airsim.CarClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
-car_controls = airsim.CarControls()
-
-
+# car_controls = airsim.CarControls()
 
 # We maintain a queue of images of this size
 QUEUESIZE = 10
@@ -34,17 +32,12 @@ except:
     os.mkdir(IMAGEDIR)
     
 # connect to the AirSim simulator 
-client.confirmConnection()
 print('Connected')
-client.enableApiControl(True)
-car_controls = CarControls()
-
 client.reset()
 
 # go forward
-car_controls.throttle = 1.0
-car_controls.steering = 0
-client.setCarControls(car_controls)
+client.takeoffAsync()
+client.moveByVelocityAsync(2,0,0)
 
 imagequeue = []
 
@@ -52,7 +45,7 @@ while True:
 
     # get RGBA camera images from the car
     responses = client.simGetImages([ImageRequest(1, AirSimImageType.Scene)])  
-
+    
     # add image to queue        
     imagequeue.append(responses[0].image_data_uint8)
 

@@ -12,7 +12,7 @@ import pickle
 import sys
 
 from image_helper import loadgray, IMAGEDIR
-from train import inference
+from tf_softmax_layer import inference
 
 TMPFILE = IMAGEDIR + '/active.png'
 PARAMFILE = 'params.pkl'
