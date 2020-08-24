@@ -10,6 +10,7 @@ import time
 import tensorflow as tf
 import pickle
 import sys
+import numpy as np 
 
 from image_helper import loadgray, IMAGEDIR
 from tf_softmax_layer import inference
@@ -23,18 +24,13 @@ BRAKING_DURATION = 15
 tf.compat.v1.disable_eager_execution() #tf 2.0在1.0中不兼容的特性
 
 # 连接到airsim
-client = airsim.CarClient()
+client = airsim.MultirotorClient()
 client.confirmConnection()
-client.enableApiControl(True)
-car_controls = airsim.CarControls()
-
 client.reset() 
+client.enableApiControl(True)
+client.armDisarm(True)
 
-# go forward
-car_controls.throttle = INITIAL_THROTTLE
-car_controls.steering = 0
-client.setCarControls(car_controls)
-
+client.takeoffAsync().join()
 # Load saved training params as ordinary NumPy
 # 数据序列
 W,b = pickle.load(open('params.pkl', 'rb'))
@@ -57,8 +53,10 @@ sess.run(init_op)
 brakingCount = 0
 
 # Loop until we detect a collision
+vx=1
+vy=0
 while True:
-
+    client.moveByVelocityAsync(vx, vy,0, 1, airsim.DrivetrainType.ForwardOnly, airsim.YawMode(False, 0)).join()
     # Get RGBA camera images from the car
     responses = client.simGetImages([ImageRequest(1, AirSimImageType.Scene)])
 
@@ -77,18 +75,11 @@ while True:
 
     # Slam on the brakes if it ain't safe!
     if safety < 0.5:
-
-        if brakingCount > BRAKING_DURATION:
-            print('BRAKING TO AVOID COLLISSION')
-            sys.stdout.flush()
-            break
-        
-        car_controls.brake = 1.0
-        client.setCarControls(car_controls)
-
-        brakingCount += 1
-        
+        # client.moveByAngleRatesThrottleAsync(np.pi/6,np.pi/6,np.pi/6,1,1).join()
+        temp=vx
+        vx=vy
+        vy=temp
+       
     # Wait a bit on each iteration
     time.sleep(0.1)
 
-client.enableApiControl(False)

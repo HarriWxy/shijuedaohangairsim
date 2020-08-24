@@ -20,6 +20,7 @@ import time
 client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
+client.armDisarm(True)
 # car_controls = airsim.CarControls()
 
 # We maintain a queue of images of this size
@@ -33,16 +34,17 @@ except:
     
 # connect to the AirSim simulator 
 print('Connected')
-client.reset()
+
 
 # go forward
-client.takeoffAsync()
-client.moveByVelocityAsync(2,0,0)
-
+client.takeoffAsync().join()
+vx=2
+vy=0
+client.moveByVelocityAsync(vx, vy,0, 1, airsim.DrivetrainType.ForwardOnly, airsim.YawMode(False, 0)).join()
 imagequeue = []
 
 while True:
-
+    client.moveByVelocityAsync(vx, vy,0, 1, airsim.DrivetrainType.ForwardOnly, airsim.YawMode(False, 0)).join()
     # get RGBA camera images from the car
     responses = client.simGetImages([ImageRequest(1, AirSimImageType.Scene)])  
     

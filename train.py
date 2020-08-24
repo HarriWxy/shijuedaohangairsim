@@ -10,6 +10,8 @@ import tensorflow as tf
 import numpy as np
 import pickle
 from image_helper import loadgray
+from tf_softmax_layer import inference
+
 
 # 最后一张图片是发生了碰撞,之前的没有
 # SAFESIZE意味着安全的图片数量
